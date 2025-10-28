@@ -64,6 +64,53 @@ namespace NetSdrClientAppTests
             Assert.That(parametersBytes.Count(), Is.EqualTo(parametersLength));
         }
 
-        //TODO: add more NetSdrMessageHelper tests
+        [Test]
+        public void TranslateMessage_ShouldReturnTrue_ForValidDataItemMessage()
+        {
+            // Arrange
+            var parameters = new byte[6];
+            var msg = NetSdrMessageHelper.GetDataItemMessage(NetSdrMessageHelper.MsgTypes.DataItem1, parameters);
+
+            // Act
+            var success = NetSdrMessageHelper.TranslateMessage(
+                msg,
+                out var type,
+                out var itemCode,
+                out var seq,
+                out var body);
+
+            // Assert
+            Assert.That(success, Is.True);
+            Assert.That(type, Is.EqualTo(NetSdrMessageHelper.MsgTypes.DataItem1));
+            Assert.That(itemCode, Is.EqualTo(NetSdrMessageHelper.ControlItemCodes.None));
+            Assert.That(seq, Is.GreaterThanOrEqualTo(0));
+            Assert.That(body.Length, Is.EqualTo(4));
+        }
+
+        [Test]
+        public void GetSamples_ShouldReturnCorrectNumberOfSamples()
+        {
+            // Arrange
+            var sampleSize = (ushort)32;
+            var body = new byte[8];
+
+            // Act
+            var samples = NetSdrMessageHelper.GetSamples(sampleSize, body).ToList();
+
+            // Assert
+            Assert.That(samples.Count, Is.EqualTo(2));
+        }
+
+        [Test]
+        public void GetSamples_ShouldThrow_WhenSampleSizeTooLarge()
+        {
+            // Arrange
+            var sampleSize = (ushort)64; // перевищує 4 байти після поділу на 8
+            var body = new byte[16];
+
+            // Act + Assert
+            Assert.Throws<ArgumentOutOfRangeException>(() =>
+                NetSdrMessageHelper.GetSamples(sampleSize, body).ToList());
+        }
     }
 }
