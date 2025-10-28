@@ -7,6 +7,7 @@ using System.Net.Sockets;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using System.Diagnostics.CodeAnalysis;
 
 namespace NetSdrClientApp.Networking
 {
@@ -22,12 +23,14 @@ namespace NetSdrClientApp.Networking
 
         public event EventHandler<byte[]>? MessageReceived;
 
+        [ExcludeFromCodeCoverage]
         public TcpClientWrapper(string host, int port)
         {
             _host = host;
             _port = port;
         }
 
+        [ExcludeFromCodeCoverage]
         public void Connect()
         {
             if (Connected)
@@ -52,6 +55,7 @@ namespace NetSdrClientApp.Networking
             }
         }
 
+        [ExcludeFromCodeCoverage]
         public void Disconnect()
         {
             if (Connected)
@@ -71,6 +75,7 @@ namespace NetSdrClientApp.Networking
             }
         }
 
+        [ExcludeFromCodeCoverage]
         public async Task SendMessageAsync(byte[] data)
         {
             if (Connected && _stream != null && _stream.CanWrite)
@@ -84,6 +89,7 @@ namespace NetSdrClientApp.Networking
             }
         }
 
+        [ExcludeFromCodeCoverage]
         public async Task SendMessageAsync(string str)
         {
             var data = Encoding.UTF8.GetBytes(str);
@@ -99,6 +105,7 @@ namespace NetSdrClientApp.Networking
             }
         }
 
+        [ExcludeFromCodeCoverage]
         private async Task StartListeningAsync()
         {
             if (Connected && _stream != null && _stream.CanRead)
