@@ -139,18 +139,16 @@ namespace NetSdrClientApp
             if (!_tcpClient.Connected)
             {
                 Console.WriteLine("No active connection.");
-                return null;
+                return await Task.FromResult(Array.Empty<byte>()); 
             }
 
             responseTaskSource = new TaskCompletionSource<byte[]>(TaskCreationOptions.RunContinuationsAsynchronously);
             var responseTask = responseTaskSource.Task;
-
             await _tcpClient.SendMessageAsync(msg);
-
             var resp = await responseTask;
-
             return resp;
         }
+
 
         private void _tcpClient_MessageReceived(object? sender, byte[] e)
         {
