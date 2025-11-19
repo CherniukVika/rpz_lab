@@ -105,4 +105,5 @@ namespace NetSdrClientApp.Networking
             GC.SuppressFinalize(this);
         }
     }
+    
 }
