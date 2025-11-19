@@ -3,7 +3,8 @@ using NUnit.Framework;
 
 namespace EchoServerTests.Udp
 {
-    [TestFixture]
+    [
+        TestFixture]
     public class UdpMessageBuilderTests
     {
         private UdpMessageBuilder _builder;
