@@ -44,7 +44,7 @@ namespace EchoServer
             await WaitForQuitKey(input);
 
             sender.StopSending();
-            server.Stop();9
+            server.Stop();
             Console.WriteLine("Sender stopped.");
         }
 
