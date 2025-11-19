@@ -64,6 +64,8 @@ namespace NetSdrClientAppTests
             Assert.That(parametersBytes.Count(), Is.EqualTo(parametersLength));
         }
 
+        
+
         [Test]
         public void TranslateMessage_ShouldReturnTrue_ForValidDataItemMessage()
         {
@@ -111,6 +113,80 @@ namespace NetSdrClientAppTests
             // Act + Assert
             Assert.Throws<ArgumentOutOfRangeException>(() =>
                 NetSdrMessageHelper.GetSamples(sampleSize, body).ToList());
+        }
+
+        [Test]
+        public void TranslateMessage_DataItem_Success()
+        {
+            // Arrange
+            var type = NetSdrMessageHelper.MsgTypes.DataItem1;
+            byte[] parameters = { 9, 8, 7, 6 };
+
+            // Act
+            var msg = NetSdrMessageHelper.GetDataItemMessage(type, parameters);
+            bool success = NetSdrMessageHelper.TranslateMessage(msg, out var parsedType, out var parsedCode, out var seq, out var body);
+
+            // Assert
+            Assert.That(success, Is.True);
+            Assert.That(parsedType, Is.EqualTo(type));
+            Assert.That(parsedCode, Is.EqualTo(NetSdrMessageHelper.ControlItemCodes.None));
+            Assert.That(body.Length, Is.EqualTo(parameters.Length - 2)); // minus sequence bytes
+        }
+  
+        [Test]
+        public void GetSamples_ValidSamples_ShouldReturnIntegers()
+        {
+            // Arrange
+            ushort sampleSize = 16;
+            byte[] body = { 1, 0, 2, 0, 3, 0, 4, 0 };
+
+            // Act
+            var samples = NetSdrMessageHelper.GetSamples(sampleSize, body).ToList();
+
+            // Assert
+            Assert.That(samples.Count, Is.EqualTo(4));
+            Assert.That(samples[0], Is.EqualTo(BitConverter.ToInt32(new byte[] { 1, 0, 0, 0 })));
+        }
+
+        [Test]
+        public void GetSamples_InvalidSampleSize_ShouldThrow()
+        {
+            // Arrange + Act + Assert
+            Assert.Throws<ArgumentOutOfRangeException>(() =>
+            {
+                NetSdrMessageHelper.GetSamples(64, new byte[] { 1, 2, 3 }).ToList();
+            });
+        }
+
+        [Test]
+        public void GetControlItemMessage_TooLong_ShouldThrow()
+        {
+            // Arrange
+            var type = NetSdrMessageHelper.MsgTypes.SetControlItem;
+            var code = NetSdrMessageHelper.ControlItemCodes.RFFilter;
+            var longData = new byte[8200];
+
+            // Act + Assert
+            Assert.Throws<ArgumentException>(() =>
+            {
+                NetSdrMessageHelper.GetControlItemMessage(type, code, longData);
+            });
+        }
+
+        [Test]
+        public void GetHeader_EdgeCase_DataItem_MaxLength_ShouldWrapToZero()
+        {
+            // Arrange
+            var type = NetSdrMessageHelper.MsgTypes.DataItem0;
+            var msg = NetSdrMessageHelper.GetDataItemMessage(type, new byte[8192]);
+
+            // Act
+            bool success = NetSdrMessageHelper.TranslateMessage(msg, out var parsedType, out _, out _, out var body);
+
+            // Assert
+            Assert.That(success, Is.True);
+            Assert.That(parsedType, Is.EqualTo(type));
+            Assert.That(body.Length, Is.EqualTo(8192 - 2));
         }
     }
 }

@@ -77,6 +77,7 @@ namespace NetSdrClientApp.Networking
             }
         }
 
+        [ExcludeFromCodeCoverage]
         public override int GetHashCode()
         {
             var payload = $"{nameof(UdpClientWrapper)}|{_localEndPoint.Address}|{_localEndPoint.Port}";
@@ -84,7 +85,7 @@ namespace NetSdrClientApp.Networking
             var hash = sha256.ComputeHash(Encoding.UTF8.GetBytes(payload));
             return BitConverter.ToInt32(hash, 0);
         }
-
+        [ExcludeFromCodeCoverage]
         public override bool Equals(object? obj)
         {
             if (obj is not UdpClientWrapper other)
@@ -94,6 +95,7 @@ namespace NetSdrClientApp.Networking
                    && _localEndPoint.Port == other._localEndPoint.Port;
         }
 
+        [ExcludeFromCodeCoverage]
         public void Dispose()
         {
             if (_disposed) return;

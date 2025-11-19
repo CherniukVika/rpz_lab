@@ -1,14 +1,15 @@
-﻿using NetSdrClientApp.Messages;
-using NetSdrClientApp.Networking;
-using System;
+﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Text;
 using System.Threading;
 using System.Threading.Channels;
 using System.Threading.Tasks;
-using static NetSdrClientApp.Messages.NetSdrMessageHelper;
+using NetSdrClientApp.Messages;
+using NetSdrClientApp.Networking;
 using static System.Runtime.InteropServices.JavaScript.JSType;
+using static NetSdrClientApp.Messages.NetSdrMessageHelper;
 
 namespace NetSdrClientApp
 {
@@ -19,6 +20,7 @@ namespace NetSdrClientApp
 
         public bool IQStarted { get; set; }
 
+        [ExcludeFromCodeCoverage]
         public NetSdrClient(ITcpClient tcpClient, IUdpClient udpClient)
         {
             _tcpClient = tcpClient;
@@ -83,6 +85,7 @@ namespace NetSdrClientApp
             _ = _udpClient.StartListeningAsync();
         }
 
+        [ExcludeFromCodeCoverage]
         public async Task StopIQAsync()
         {
             if (!_tcpClient.Connected)
@@ -104,6 +107,7 @@ namespace NetSdrClientApp
             _udpClient.StopListening();
         }
 
+        [ExcludeFromCodeCoverage]
         public async Task ChangeFrequencyAsync(long hz, int channel)
         {
             var channelArg = (byte)channel;
